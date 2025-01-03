@@ -1,6 +1,30 @@
 import os, json
 from shutil import rmtree
 
+# Parameters
+NAMESPACE: str = "dialogue"
+FUNCTION_TAG_PATH: str = os.path.join("minecraft", "tags", "function")
+LOAD_TAG_PATH: str = os.path.join(FUNCTION_TAG_PATH, "load.json")
+TICK_TAG_PATH: str = os.path.join(FUNCTION_TAG_PATH, "tick.json")
+
+FUNCTION_PATH: str = os.path.join(NAMESPACE, "function")
+LOAD_FUNCTION = "load"
+LOAD_FUNCTIONPATH: str = os.path.join(FUNCTION_PATH, f"{LOAD_FUNCTION}.mcfunction")
+
+TICK_FUNCTION = "tick"
+TICK_FUNCTIONPATH: str = os.path.join(FUNCTION_PATH, f"{TICK_FUNCTION}.mcfunction")
+UNINSTALL_FUNCTIONPATH: str = os.path.join(FUNCTION_PATH, "uninstall.mcfunction")
+
+SEQUENCES_PATH = os.path.join(FUNCTION_PATH, "sequences")
+
+# Scoreboard constants
+GLOBAL_SCOREBOARD_OBJ: str = "Dialogue.Global"
+TIMER: str = "timer"
+NEXT_DIALOGUE_ID: str = "next_dialogue_id"
+PAUSE: str = "pause"
+
+# Commands 
+RESET_TIMER_CMD = f"function {NAMESPACE}:helper/reset_timer"
 
 
 def gen_mcmeta(pack_format: int, description: str) -> str:
@@ -13,20 +37,93 @@ def create_datapack(
     datapack_name: str,
     pack_format: int = 61,
     datapack_description: str = "STDGv3",
+    reload: bool = False,
 ) -> str:
     cursor = os.path.join(datapack_path, datapack_name)
 
     # Delete the datapack if it exists
     if datapack_name in os.listdir(datapack_path):
-        rmtree(cursor)
+        if reload:
+            rmtree(cursor)
+
+        else:
+            raise Exception("Datapack already exists")
 
     # Create new directory
     os.mkdir(cursor)
 
-    os.mkdir(os.path.join(cursor, "data"))
+    data_path = os.path.join(cursor, "data")
+    os.mkdir(data_path)
 
     # Create .mcmeta file
     with open(os.path.join(cursor, "pack.mcmeta"), "w", encoding="utf-8") as f:
         f.write(gen_mcmeta(pack_format, datapack_description))
 
-    return os.path.join(cursor, "data")
+    # Create tags directory
+    os.makedirs(os.path.join(data_path, "minecraft", "tags", "function"))
+
+    # Create functions directory
+    os.makedirs(os.path.join(data_path, FUNCTION_PATH))
+
+    return data_path
+
+
+def get_show_display_function(data_path: str):
+    # Show display functions
+    display_cmd_str = (
+        f"scoreboard objectives setdisplay sidebar {GLOBAL_SCOREBOARD_OBJ} \n"
+    )
+
+    with open(
+        os.path.join(data_path, FUNCTION_PATH, "debug/show_display.mcfunction"), "w"
+    ) as f:
+        f.write(display_cmd_str)
+
+
+def get_force_reset_function(data_path: str):
+    # Get force reset functions
+    force_reset_cmd_str = f"scoreboard players set {TIMER} {GLOBAL_SCOREBOARD_OBJ} 0\n"
+    force_reset_cmd_str += (
+        f"scoreboard players set {NEXT_DIALOGUE_ID} {GLOBAL_SCOREBOARD_OBJ} 0\n"
+    )
+    force_reset_cmd_str += f"scoreboard players set {PAUSE} {GLOBAL_SCOREBOARD_OBJ} 1\n"
+
+    with open(
+        os.path.join(data_path, FUNCTION_PATH, "helper/force_reset.mcfunction"), "w"
+    ) as f:
+        f.write(force_reset_cmd_str)
+
+
+def get_reset_timer_function(data_path: str):
+    reset_timer_cmd_str = f"scoreboard players set {TIMER} {GLOBAL_SCOREBOARD_OBJ} 0\n"
+    with open(
+        os.path.join(data_path, FUNCTION_PATH, "helper/reset_timer.mcfunction"), "w"
+    ) as f:
+        f.write(reset_timer_cmd_str)
+
+
+def init_datapack(data_path: str):
+    # Get debug functions
+    os.makedirs(os.path.join(data_path, FUNCTION_PATH, "debug"))
+    get_show_display_function(data_path)
+
+    # Get helper function
+    os.makedirs(os.path.join(data_path, FUNCTION_PATH, "helper"))
+    get_force_reset_function(data_path)
+    get_reset_timer_function(data_path)
+
+    # Get the init function
+    load_cmd_str = f"scoreboard objectives add {GLOBAL_SCOREBOARD_OBJ} dummy\n"
+    load_cmd_str += f"function {NAMESPACE}:debug/force_reset\n"
+    with open(os.path.join(data_path, LOAD_FUNCTIONPATH), "w") as f:
+        f.write(load_cmd_str)
+
+    # Link the init function to init tag
+    load_json = {"values": [f"{NAMESPACE}:{LOAD_FUNCTION}"]}
+    with open(os.path.join(data_path, LOAD_TAG_PATH), "w") as f:
+        json.dump(load_json, f)
+
+    # Get the uninstall function
+    uninstall_cmd_str = f"scoreboard objectives remove {GLOBAL_SCOREBOARD_OBJ}\n"
+    with open(os.path.join(data_path, UNINSTALL_FUNCTIONPATH), "w") as f:
+        f.write(uninstall_cmd_str)

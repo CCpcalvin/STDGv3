@@ -1,4 +1,4 @@
-from .Sequence import *
+from .Sequence import Sequence, DialogueSequence
 
 def read_script(path: str):
     with open(path, "r") as f:
@@ -6,7 +6,7 @@ def read_script(path: str):
         last = head
 
         for (i, line) in enumerate(f):
-            this = DialogueSequence(i + 1, line)
+            this = DialogueSequence(i + 1, line.strip())
             last.next = this
             last = this
     
