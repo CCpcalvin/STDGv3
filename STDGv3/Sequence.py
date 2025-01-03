@@ -80,10 +80,12 @@ class Sequence:
         # Generate dialogue functions
         os.makedirs(os.path.join(data_path, SEQUENCES_PATH))
         run_sequences_file = open(
-            os.path.join(data_path, FUNCTION_PATH, "run_sequences.mcfunction"), "w"
+            os.path.join(data_path, RUN_SEQUENCES_FUNCTION_PATH), "w"
         )
         self.generate_sequence(data_path, run_sequences_file)
         run_sequences_file.close()
+
+        # Generate loop
 
 
 class DialogueSequence(Sequence):

@@ -8,15 +8,24 @@ LOAD_TAG_PATH: str = os.path.join(FUNCTION_TAG_PATH, "load.json")
 TICK_TAG_PATH: str = os.path.join(FUNCTION_TAG_PATH, "tick.json")
 
 FUNCTION_PATH: str = os.path.join(NAMESPACE, "function")
+
 LOAD_FUNCTION = "load"
-LOAD_FUNCTIONPATH: str = os.path.join(FUNCTION_PATH, f"{LOAD_FUNCTION}.mcfunction")
+LOAD_FUNCTION_PATH: str = os.path.join(FUNCTION_PATH, f"{LOAD_FUNCTION}.mcfunction")
 
 TICK_FUNCTION = "tick"
-TICK_FUNCTIONPATH: str = os.path.join(FUNCTION_PATH, f"{TICK_FUNCTION}.mcfunction")
+TICK_FUNCTION_PATH: str = os.path.join(FUNCTION_PATH, f"{TICK_FUNCTION}.mcfunction")
+
+LOOP_FUNCTION = "loop"
+LOOP_FUNCTION_PATH: str = os.path.join(FUNCTION_PATH, f"{LOOP_FUNCTION}.mcfunction")
+
+RUN_SEQUENCES_FUNCTION = "run_sequences"
+RUN_SEQUENCES_FUNCTION_PATH: str = os.path.join(
+    FUNCTION_PATH, f"{RUN_SEQUENCES_FUNCTION}.mcfunction"
+)
+
 UNINSTALL_FUNCTIONPATH: str = os.path.join(FUNCTION_PATH, "uninstall.mcfunction")
 
 SEQUENCES_PATH = os.path.join(FUNCTION_PATH, "sequences")
-
 DEFAULT_SEQUENCES_INTERVAL = 20
 
 # Scoreboard constants
@@ -28,11 +37,20 @@ TIME_TO_NEXT_SEQUENCE: str = "time_to_next_sequence"
 
 # Commands
 RESET_TIMER_CMD = f"function {NAMESPACE}:helper/reset_timer\n"
+TIMER_LOOP_CMD = f"scoreboard players add {TIMER} {GLOBAL_SCOREBOARD_OBJ} 1\n"
 
 
 def gen_mcmeta(pack_format: int, description: str) -> str:
     MCMETA = {"pack": {"pack_format": pack_format, "description": description}}
     return json.dumps(MCMETA, ensure_ascii=False)
+
+
+def set_next_dialogue_id(id: int):
+    return f"scoreboard players set {NEXT_DIALOGUE_ID} Dialogue.Global {id}\n"
+
+
+def set_time_to_next_sequence(time: int):
+    return f"scoreboard players set {TIME_TO_NEXT_SEQUENCE} Dialogue.Global {time}\n"
 
 
 def create_datapack(
@@ -121,7 +139,7 @@ def init_datapack(data_path: str):
     # Get the init function
     load_cmd_str = f"scoreboard objectives add {GLOBAL_SCOREBOARD_OBJ} dummy\n"
     load_cmd_str += f"function {NAMESPACE}:debug/force_reset\n"
-    with open(os.path.join(data_path, LOAD_FUNCTIONPATH), "w") as f:
+    with open(os.path.join(data_path, LOAD_FUNCTION_PATH), "w") as f:
         f.write(load_cmd_str)
 
     # Link the init function to init tag
@@ -134,10 +152,19 @@ def init_datapack(data_path: str):
     with open(os.path.join(data_path, UNINSTALL_FUNCTIONPATH), "w") as f:
         f.write(uninstall_cmd_str)
 
+    # Get the tick function
+    tick_cmd_str = f"execute if score {PAUSE} {GLOBAL_SCOREBOARD_OBJ} matches 0 run function {NAMESPACE}:{LOOP_FUNCTION}\n"
+    with open(os.path.join(data_path, TICK_FUNCTION_PATH), "w") as f:
+        f.write(tick_cmd_str)
 
-def set_next_dialogue_id(id: int):
-    return f"scoreboard players set {NEXT_DIALOGUE_ID} Dialogue.Global {id}\n"
+    # Link the tick function to tick tag
+    tick_json = {"values": [f"{NAMESPACE}:{TICK_FUNCTION}"]}
+    with open(os.path.join(data_path, TICK_TAG_PATH), "w") as f:
+        json.dump(tick_json, f)
 
+    # Get the loop function
+    loop_cmd_str = f"execute if score {TIMER} {GLOBAL_SCOREBOARD_OBJ} = {TIME_TO_NEXT_SEQUENCE} {GLOBAL_SCOREBOARD_OBJ} run function {NAMESPACE}:{RUN_SEQUENCES_FUNCTION}\n"
+    loop_cmd_str += TIMER_LOOP_CMD
+    with open(os.path.join(data_path, LOOP_FUNCTION_PATH), "w") as f:
+        f.write(loop_cmd_str)
 
-def set_time_to_next_sequence(time: int):
-    return f"scoreboard players set {TIME_TO_NEXT_SEQUENCE} Dialogue.Global {time}\n"
