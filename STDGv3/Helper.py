@@ -17,14 +17,17 @@ UNINSTALL_FUNCTIONPATH: str = os.path.join(FUNCTION_PATH, "uninstall.mcfunction"
 
 SEQUENCES_PATH = os.path.join(FUNCTION_PATH, "sequences")
 
+DEFAULT_SEQUENCES_INTERVAL = 20
+
 # Scoreboard constants
 GLOBAL_SCOREBOARD_OBJ: str = "Dialogue.Global"
 TIMER: str = "timer"
 NEXT_DIALOGUE_ID: str = "next_dialogue_id"
 PAUSE: str = "pause"
+TIME_TO_NEXT_SEQUENCE: str = "time_to_next_sequence"
 
-# Commands 
-RESET_TIMER_CMD = f"function {NAMESPACE}:helper/reset_timer"
+# Commands
+RESET_TIMER_CMD = f"function {NAMESPACE}:helper/reset_timer\n"
 
 
 def gen_mcmeta(pack_format: int, description: str) -> str:
@@ -82,11 +85,14 @@ def get_show_display_function(data_path: str):
 
 def get_force_reset_function(data_path: str):
     # Get force reset functions
-    force_reset_cmd_str = f"scoreboard players set {TIMER} {GLOBAL_SCOREBOARD_OBJ} 0\n"
+    force_reset_cmd_str = RESET_TIMER_CMD
     force_reset_cmd_str += (
         f"scoreboard players set {NEXT_DIALOGUE_ID} {GLOBAL_SCOREBOARD_OBJ} 0\n"
     )
     force_reset_cmd_str += f"scoreboard players set {PAUSE} {GLOBAL_SCOREBOARD_OBJ} 1\n"
+    force_reset_cmd_str += (
+        f"scoreboard players set {TIME_TO_NEXT_SEQUENCE} {GLOBAL_SCOREBOARD_OBJ} 9999\n"
+    )
 
     with open(
         os.path.join(data_path, FUNCTION_PATH, "helper/force_reset.mcfunction"), "w"
@@ -127,3 +133,11 @@ def init_datapack(data_path: str):
     uninstall_cmd_str = f"scoreboard objectives remove {GLOBAL_SCOREBOARD_OBJ}\n"
     with open(os.path.join(data_path, UNINSTALL_FUNCTIONPATH), "w") as f:
         f.write(uninstall_cmd_str)
+
+
+def set_next_dialogue_id(id: int):
+    return f"scoreboard players set {NEXT_DIALOGUE_ID} Dialogue.Global {id}\n"
+
+
+def set_time_to_next_sequence(time: int):
+    return f"scoreboard players set {TIME_TO_NEXT_SEQUENCE} Dialogue.Global {time}\n"

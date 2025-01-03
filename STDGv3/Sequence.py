@@ -11,6 +11,7 @@ class Sequence:
         self.id: int = id
         self.cmd_str = cmd_str
         self.next: Optional[Sequence] = None
+        self.time_to_next_sequence: Optional[int] = None
 
     def print_content(self):
         return f"\t ID: {self.id}\n\t CommandString: {self.cmd_str}\n"
@@ -36,13 +37,18 @@ class Sequence:
         else:
             return self.cmd_str
 
+    def generate_interval(self):
+        if not self.time_to_next_sequence:
+            self.time_to_next_sequence = DEFAULT_SEQUENCES_INTERVAL
+
+        return self.time_to_next_sequence
+
     def generate_sequence(self, data_path: str, run_sequence: TextIO):
         # For generating sequence mcfunction
         cmd = self.generate_cmd()
-        cmd += (
-            f"scoreboard players set {NEXT_DIALOGUE_ID} Dialogue.Global {self.id + 1}\n"
-        )
+        cmd += set_next_dialogue_id(self.id + 1)
         cmd += RESET_TIMER_CMD
+        cmd += set_time_to_next_sequence(self.generate_interval())
 
         with open(
             os.path.join(data_path, SEQUENCES_PATH, f"sequence_{self.id}.mcfunction"),
@@ -55,7 +61,7 @@ class Sequence:
             f"execute if score {NEXT_DIALOGUE_ID} {GLOBAL_SCOREBOARD_OBJ} matches {self.id} function {NAMESPACE}:sequences/sequence_{self.id}\n"
         )
 
-        if self.next is not None:
+        if self.next:
             self.next.generate_sequence(data_path, run_sequence)
 
     def generate_datapack(
