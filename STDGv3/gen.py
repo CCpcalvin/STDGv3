@@ -20,14 +20,14 @@ LOOP_FUNCTION = "loop"
 LOOP_FUNCTION_PATH: str = os.path.join(FUNCTION_PATH, f"{LOOP_FUNCTION}.mcfunction")
 
 RUN_SEQUENCES_FUNCTION = "run_sequences"
-RUN_SEQUENCES_FUNCTION_PATH: str = os.path.join(
-    FUNCTION_PATH, f"{RUN_SEQUENCES_FUNCTION}.mcfunction"
-)
 RUN_SEQUENCES_CMD = f"function {NAMESPACE}:{RUN_SEQUENCES_FUNCTION}\n"
+
+RUN_SCENE_FUNCTION = "run_scene"
+RUN_SCENE_CMD = f"function {NAMESPACE}:{RUN_SCENE_FUNCTION}\n"
 
 UNINSTALL_FUNCTIONPATH: str = os.path.join(FUNCTION_PATH, "uninstall.mcfunction")
 
-SEQUENCES_PATH = os.path.join(FUNCTION_PATH, "sequences")
+SEQUENCES_SUBPATH = "sequences"
 START_ID = 0
 TICK_PER_SECOND = 20
 DEFAULT_SEQUENCES_INTERVAL = 20
@@ -39,6 +39,7 @@ NEXT_DIALOGUE_ID: str = "next_dialogue_id"
 PAUSE: str = "pause"
 TIME_TO_NEXT_SEQUENCE: str = "time_to_next_sequence"
 SEQUENCE_GUARD: str = "guard"
+SCENE_ID: str = "scene_id"
 
 # Commands
 RESET_TIMER_CMD = f"function {NAMESPACE}:helper/reset_timer\n"
@@ -123,6 +124,10 @@ def get_show_display_function(data_path: str):
         f.write(display_cmd_str)
 
 
+def set_scene_id(id: int):
+    return f"scoreboard players set {SCENE_ID} Dialogue.Global {id}\n"
+
+
 def get_force_reset_function(data_path: str):
     # Get force reset functions
     force_reset_cmd_str = RESET_TIMER_CMD
@@ -130,6 +135,7 @@ def get_force_reset_function(data_path: str):
     force_reset_cmd_str += set_pause()
     force_reset_cmd_str += set_time_to_next_sequence(9999)
     force_reset_cmd_str += SET_GUARD_CMD
+    force_reset_cmd_str += set_scene_id(9999)
 
     with open(
         os.path.join(data_path, FUNCTION_PATH, "helper/force_reset.mcfunction"),
@@ -180,16 +186,6 @@ def get_stop_function(data_path: str):
         f.write(stop_cmd_str)
 
 
-def get_skip_function(data_path: str):
-    skip_cmd_str = RUN_SEQUENCES_CMD
-    with open(
-        os.path.join(data_path, FUNCTION_PATH, "helper/skip.mcfunction"),
-        "w",
-        encoding="utf-8",
-    ) as f:
-        f.write(skip_cmd_str)
-
-
 def init_datapack(data_path: str):
     # Get debug functions
     os.makedirs(os.path.join(data_path, FUNCTION_PATH, "debug"))
@@ -202,7 +198,6 @@ def init_datapack(data_path: str):
     get_pause_function(data_path)
     get_stop_pause_function(data_path)
     get_stop_function(data_path)
-    get_skip_function(data_path)
 
     # Get the init function
     load_cmd_str = f"scoreboard objectives add {GLOBAL_SCOREBOARD_OBJ} dummy\n"
@@ -235,7 +230,7 @@ def init_datapack(data_path: str):
     # Get the loop function
     loop_cmd_str = (
         f"execute if score {TIMER} {GLOBAL_SCOREBOARD_OBJ} >= {TIME_TO_NEXT_SEQUENCE} {GLOBAL_SCOREBOARD_OBJ} run "
-        + RUN_SEQUENCES_CMD
+        + RUN_SCENE_CMD
     )
     loop_cmd_str += TIMER_LOOP_CMD
     loop_cmd_str += REMOVE_GUARD_CMD

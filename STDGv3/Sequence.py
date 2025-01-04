@@ -8,9 +8,11 @@ from .gen import *
 class Sequence:
     start_id = START_ID
     default_sequence_interval = DEFAULT_SEQUENCES_INTERVAL
+    sequence_subpath = SEQUENCES_SUBPATH
 
     def __init__(
         self,
+        scene: str,
         cmd_str_list: Optional[List[str]] = None,
     ):
         if cmd_str_list:
@@ -21,6 +23,10 @@ class Sequence:
         self.next: Optional[Sequence] = None
         self.pervious: Optional[Sequence] = None
         self.time_to_next_sequence: Optional[int] = None
+
+        self.scene = scene
+        self.scene_path = os.path.join(FUNCTION_PATH, scene)
+        self.scene_sequence_path = os.path.join(self.scene_path, self.sequence_subpath)
 
     def print_content(self):
         return f"\t CommandString: {self.cmd_str_list}\n\t Time to next Sequence: {self.time_to_next_sequence}\n"
@@ -137,10 +143,15 @@ class Sequence:
     def get_cmd_list(self):
         return self.cmd_str_list
 
+    def run_sequence(self, id: int):
+        return (
+            f"function {NAMESPACE}:{self.scene}/{self.sequence_subpath}/{id}\n"
+        )
+
     def generate_sequence(self, id: int, data_path: str, run_sequence_file: TextIO):
         # For generating sequence mcfunction
         with open(
-            os.path.join(data_path, SEQUENCES_PATH, f"sequence_{id}.mcfunction"),
+            os.path.join(data_path, self.scene_sequence_path, f"{id}.mcfunction"),
             "w",
             encoding="utf-8",
         ) as f:
@@ -158,41 +169,49 @@ class Sequence:
         # For generating run_sequences.mcfunction
         run_sequence_file.write(
             f"execute if score {NEXT_DIALOGUE_ID} {GLOBAL_SCOREBOARD_OBJ} matches {id} if score {SEQUENCE_GUARD} {GLOBAL_SCOREBOARD_OBJ} matches 0 run "
-            + run_sequence(id)
+            + self.run_sequence(id)
             + "\n"
         )
 
         if self.next:
             self.next.generate_sequence(id + 1, data_path, run_sequence_file)
 
-    def generate_datapack(
-        self,
-        datapack_path: str,
-        datapack_name: str,
-        pack_format: int = 61,
-        datapack_description: str = "STDGv3",
-        reload: bool = False,
-    ):
-        data_path = create_datapack(
-            datapack_path, datapack_name, pack_format, datapack_description, reload
-        )
-        init_datapack(data_path)
+    def get_run_sequence_cmd(self):
+        return f"function {NAMESPACE}:{self.scene}/{RUN_SEQUENCES_FUNCTION}\n"
 
+    def generate_entire_sequence(
+        self,
+        scene_id: int,
+        data_path: str,
+    ):
         # Generate sequence functions
-        os.makedirs(os.path.join(data_path, SEQUENCES_PATH))
+        os.makedirs(os.path.join(data_path, self.scene_sequence_path))
         run_sequences_file = open(
-            os.path.join(data_path, RUN_SEQUENCES_FUNCTION_PATH), "w", encoding="utf-8"
+            os.path.join(
+                data_path, self.scene_path, f"{RUN_SEQUENCES_FUNCTION}.mcfunction"
+            ),
+            "w",
+            encoding="utf-8",
         )
         self.generate_sequence(START_ID, data_path, run_sequences_file)
         run_sequences_file.close()
 
         # Generate start sequence function
         start_cmd = FORCE_RESET_CMD
+        start_cmd = set_scene_id(scene_id)
         start_cmd += stop_pause()
-        start_cmd += run_sequence(START_ID)
+        start_cmd += self.run_sequence(START_ID)
         with open(
-            os.path.join(data_path, SEQUENCES_PATH, f"start.mcfunction"),
+            os.path.join(data_path, self.scene_path, f"start.mcfunction"),
             "w",
             encoding="utf-8",
         ) as f:
             f.write(start_cmd)
+
+        # Generate skip sequence function
+        with open(
+            os.path.join(data_path, self.scene_path, "skip.mcfunction"),
+            "w",
+            encoding="utf-8",
+        ) as f:
+            f.write(self.get_run_sequence_cmd())

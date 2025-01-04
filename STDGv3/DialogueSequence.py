@@ -25,8 +25,8 @@ class DialogueSequence(Sequence):
     color_map: Dict[str, str] = {}
     pattern: Optional[Pattern[str]] = None
 
-    def __init__(self, dialogue_str: str):
-        super().__init__()
+    def __init__(self, scene: str, dialogue_str: str):
+        super().__init__(scene)
         self.dialogue_str = dialogue_str.strip()
         self.dialogue_cmd_json: Optional[List] = None
 

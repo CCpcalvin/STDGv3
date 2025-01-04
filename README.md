@@ -38,7 +38,7 @@ last.insert_after(copy.deepcopy(tpSq))
 
 ```
 
-Insert 
+Append and extend functions
 
 ```python
 head.append("function scene:start")
