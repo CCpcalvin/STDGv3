@@ -6,8 +6,14 @@ Run
 import STDGv3
 
 head = STDGv3.read_script("./tests/datapack/scripts.txt")
-head.generate_dialogue_cmd()
-head.generate_datapack("./tests/datapack/", "test", reload=True)
+sqList = [head]
+
+STDGv3.generate_datapack(
+    sqList,
+    "./tests/datapack/",
+    "test",
+    reload=True,
+)
 ```
 
 Print 
@@ -51,5 +57,10 @@ Color
 ```python
 STDGv3.DialogueSequence.update_colormap({"嗣尤": "aqua", "幸姈": "red"})
 head.generate_dialogue_json()
-head.generate_datapack("./tests/datapack/", "test", reload=True)
+STDGv3.generate_datapack(
+    sqList,
+    "./tests/datapack/",
+    "test",
+    reload=True,
+)
 ```
