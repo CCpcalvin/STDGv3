@@ -19,7 +19,7 @@ def count_chinese_characters(text: str):
 
 
 class DialogueSequence(Sequence):
-    chinese_character_reading_speed = 4
+    chinese_character_reading_speed = 4.0
     english_character_reading_speed = 100 * 4.7 / 60
 
     def __init__(self, dialogue_str: str):

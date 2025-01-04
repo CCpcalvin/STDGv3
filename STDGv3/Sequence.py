@@ -102,22 +102,20 @@ class Sequence:
         return self.time_to_next_sequence
 
     def generate_sequence(self, id: int, data_path: str, run_sequence_file: TextIO):
-        # For generating sequence mcfunction
-        cmd = self.get_cmd()
-        cmd += set_next_dialogue_id(id + 1)
-        cmd += RESET_TIMER_CMD
-        cmd += set_time_to_next_sequence(self.get_time_to_next_sequence())
-        cmd += SET_GUARD_CMD
-
-        if not self.next:
-            cmd += set_pause()
-
         with open(
             os.path.join(data_path, SEQUENCES_PATH, f"sequence_{id}.mcfunction"),
             "w",
             encoding="utf-8",
         ) as f:
-            f.write(cmd)
+            # For generating sequence mcfunction
+            f.write(self.get_cmd())
+            f.write(set_next_dialogue_id(id + 1))
+            f.write(RESET_TIMER_CMD)
+            f.write(set_time_to_next_sequence(self.get_time_to_next_sequence()))
+            f.write(SET_GUARD_CMD)
+
+            if not self.next:
+                f.write(set_pause())
 
         # For generating run_sequences.mcfunction
         run_sequence_file.write(
