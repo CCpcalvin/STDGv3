@@ -2,7 +2,7 @@ from .Sequence import DialogueSequence, Sequence
 
 
 def read_script(path: str):
-    with open(path, "r") as f:
+    with open(path, "r", encoding="utf-8") as f:
         head = DialogueSequence(0, next(f))
         last = head
 

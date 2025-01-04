@@ -93,7 +93,7 @@ def create_datapack(
     os.mkdir(data_path)
 
     # Create .mcmeta file
-    with open(os.path.join(cursor, "pack.mcmeta"), "w", encoding="utf-8") as f:
+    with open(os.path.join(cursor, "pack.mcmeta"), "w") as f:
         f.write(gen_mcmeta(pack_format, datapack_description))
 
     # Create tags directory
@@ -112,7 +112,8 @@ def get_show_display_function(data_path: str):
     )
 
     with open(
-        os.path.join(data_path, FUNCTION_PATH, "debug/show_display.mcfunction"), "w"
+        os.path.join(data_path, FUNCTION_PATH, "debug/show_display.mcfunction"),
+        "w",
     ) as f:
         f.write(display_cmd_str)
 
@@ -126,7 +127,8 @@ def get_force_reset_function(data_path: str):
     force_reset_cmd_str += SET_GUARD_CMD
 
     with open(
-        os.path.join(data_path, FUNCTION_PATH, "helper/force_reset.mcfunction"), "w"
+        os.path.join(data_path, FUNCTION_PATH, "helper/force_reset.mcfunction"),
+        "w",
     ) as f:
         f.write(force_reset_cmd_str)
 
@@ -134,7 +136,8 @@ def get_force_reset_function(data_path: str):
 def get_reset_timer_function(data_path: str):
     reset_timer_cmd_str = f"scoreboard players set {TIMER} {GLOBAL_SCOREBOARD_OBJ} 0\n"
     with open(
-        os.path.join(data_path, FUNCTION_PATH, "helper/reset_timer.mcfunction"), "w"
+        os.path.join(data_path, FUNCTION_PATH, "helper/reset_timer.mcfunction"),
+        "w",
     ) as f:
         f.write(reset_timer_cmd_str)
 
@@ -142,7 +145,8 @@ def get_reset_timer_function(data_path: str):
 def get_pause_function(data_path: str):
     pause_cmd_str = set_pause()
     with open(
-        os.path.join(data_path, FUNCTION_PATH, "helper/pause.mcfunction"), "w"
+        os.path.join(data_path, FUNCTION_PATH, "helper/pause.mcfunction"),
+        "w",
     ) as f:
         f.write(pause_cmd_str)
 
@@ -150,7 +154,8 @@ def get_pause_function(data_path: str):
 def get_stop_pause_function(data_path: str):
     stop_pause_cmd_str = stop_pause()
     with open(
-        os.path.join(data_path, FUNCTION_PATH, "helper/stop_pause.mcfunction"), "w"
+        os.path.join(data_path, FUNCTION_PATH, "helper/stop_pause.mcfunction"),
+        "w",
     ) as f:
         f.write(stop_pause_cmd_str)
 
@@ -159,7 +164,8 @@ def get_stop_function(data_path: str):
     stop_cmd_str = set_pause()
     stop_cmd_str += FORCE_RESET_CMD
     with open(
-        os.path.join(data_path, FUNCTION_PATH, "helper/stop.mcfunction"), "w"
+        os.path.join(data_path, FUNCTION_PATH, "helper/stop.mcfunction"),
+        "w",
     ) as f:
         f.write(stop_cmd_str)
 
