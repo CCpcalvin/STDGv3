@@ -18,10 +18,6 @@ def count_chinese_characters(text: str):
     return len(chinese_chars)
 
 
-def DefaultStr2Json(text: str):
-    return [{"text": text}]
-
-
 class DialogueSequence(Sequence):
     chinese_character_reading_speed = 4.0
     english_character_reading_speed = 100 * 4.7 / 60
