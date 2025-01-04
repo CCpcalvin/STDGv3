@@ -1,4 +1,5 @@
-import os, json
+import json
+import os
 from shutil import rmtree
 
 # Parameters
@@ -26,6 +27,7 @@ RUN_SEQUENCES_FUNCTION_PATH: str = os.path.join(
 UNINSTALL_FUNCTIONPATH: str = os.path.join(FUNCTION_PATH, "uninstall.mcfunction")
 
 SEQUENCES_PATH = os.path.join(FUNCTION_PATH, "sequences")
+START_ID = 1
 DEFAULT_SEQUENCES_INTERVAL = 20
 
 # Scoreboard constants

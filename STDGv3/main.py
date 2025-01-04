@@ -3,11 +3,11 @@ from .Sequence import DialogueSequence, Sequence
 
 def read_script(path: str):
     with open(path, "r", encoding="utf-8") as f:
-        head = DialogueSequence(0, next(f))
+        head = DialogueSequence(next(f))
         last = head
 
         for i, line in enumerate(f):
-            this = DialogueSequence(i + 1, line)
+            this = DialogueSequence(line)
             last.next = this
             this.pervious = last
 

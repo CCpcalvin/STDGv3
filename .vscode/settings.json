@@ -4,6 +4,9 @@
         "FUNCTIONTAGPATH",
         "GLOBALSCOREBOARDNAME",
         "LOADTAGPATH",
+        "mcmeta",
+        "setdisplay",
+        "tellraw",
         "TICKTAGPATH"
     ]
 }
