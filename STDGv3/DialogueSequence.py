@@ -1,10 +1,8 @@
-from .Sequence import Sequence
-
-
-import re
 import math
+import re
 
 from .gen import *
+from .Sequence import Sequence
 
 
 def count_chinese_characters(text: str):
@@ -21,6 +19,7 @@ def count_chinese_characters(text: str):
 class DialogueSequence(Sequence):
     chinese_character_reading_speed = 4.0
     english_character_reading_speed = 100 * 4.7 / 60
+    min_time_to_next_sequence = 2.0
 
     def __init__(self, dialogue_str: str):
         super().__init__()
@@ -32,20 +31,22 @@ class DialogueSequence(Sequence):
     def __str__(self):
         return f"Dialogue Sequence: \n {self.print_content()}\t\n"
 
-    def get_cmd(self):
-        if not self.cmd_str:
-            self.cmd_str = f'tellraw @a "{self.dialogue_str}"\n'
-
-        return self.cmd_str
+    def generate_dialogue_cmd(self):
+        self.cmd_str_list.append(f'tellraw @a "{self.dialogue_str}"\n')
+        if self.next:
+            self.next.generate_dialogue_cmd()
 
     def compute_time_to_next_sequence(self):
         chin_char_num = count_chinese_characters(self.dialogue_str)
         eng_char_num = len(self.dialogue_str) - chin_char_num
 
         self.time_to_next_sequence = math.ceil(
-            (
-                chin_char_num / self.chinese_character_reading_speed
-                + eng_char_num / self.english_character_reading_speed
+            max(
+                (
+                    chin_char_num / self.chinese_character_reading_speed
+                    + eng_char_num / self.english_character_reading_speed
+                ),
+                self.min_time_to_next_sequence,
             )
             * TICK_PER_SECOND
         )

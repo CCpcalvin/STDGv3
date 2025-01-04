@@ -11,7 +11,9 @@ def main():
     head = last.get_head()
     head.print_tree()
 
-    tpSq = STDGv3.Sequence("function scene:start\n")
+    tpSq = STDGv3.Sequence(
+        ["function scene:start", "function scene:1", "function scene:2"]
+    )
     head.insert_after(copy.deepcopy(tpSq))
     head.insert_before(copy.deepcopy(tpSq))
 
@@ -22,6 +24,7 @@ def main():
     last.insert_before(copy.deepcopy(tpSq))
     last.insert_after(copy.deepcopy(tpSq))
 
+    head.generate_dialogue_cmd()
     head.print_tree()
     head.generate_datapack("./tests/datapack/", "test", reload=True)
 

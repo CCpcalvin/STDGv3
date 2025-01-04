@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, TextIO
+from typing import Optional, TextIO, List
 
 from .gen import *
 
@@ -11,19 +11,19 @@ class Sequence:
 
     def __init__(
         self,
-        cmd_str: Optional[str] = None,
+        cmd_str_list: Optional[List[str]] = None,
     ):
-        if cmd_str:
-            self.cmd_str = cmd_str + "\n"
+        if cmd_str_list:
+            self.cmd_str_list = cmd_str_list
         else:
-            self.cmd_str = None
+            self.cmd_str_list: List[str] = []
 
         self.next: Optional[Sequence] = None
         self.pervious: Optional[Sequence] = None
         self.time_to_next_sequence: Optional[int] = None
 
     def print_content(self):
-        return f"\t CommandString: {self.cmd_str}\n"
+        return f"\t CommandString: {self.cmd_str_list}\n\t Time to next Sequence: {self.time_to_next_sequence}\n"
 
     def __str__(self):
         return f"Sequence: \n {self.print_content()}"
@@ -89,26 +89,32 @@ class Sequence:
         sequence.pervious = self
         self.next = sequence
 
-    def get_cmd(self):
-        if not self.cmd_str:
-            return ""
-        else:
-            return self.cmd_str
-
     def get_time_to_next_sequence(self):
         if not self.time_to_next_sequence:
             self.time_to_next_sequence = self.default_sequence_interval
 
         return self.time_to_next_sequence
 
+    def generate_dialogue_cmd(self):
+        if self.next:
+            self.next.generate_dialogue_cmd()
+
+    def append(self, cmd: str):
+        self.cmd_str_list.append(cmd)
+
+    def extend(self, cmd_list: List[str]):
+        self.cmd_str_list.extend(cmd_list)
+
     def generate_sequence(self, id: int, data_path: str, run_sequence_file: TextIO):
+        # For generating sequence mcfunction
         with open(
             os.path.join(data_path, SEQUENCES_PATH, f"sequence_{id}.mcfunction"),
             "w",
             encoding="utf-8",
         ) as f:
-            # For generating sequence mcfunction
-            f.write(self.get_cmd())
+            for cmd in self.cmd_str_list:
+                f.write(cmd + "\n")
+
             f.write(set_next_dialogue_id(id + 1))
             f.write(RESET_TIMER_CMD)
             f.write(set_time_to_next_sequence(self.get_time_to_next_sequence()))

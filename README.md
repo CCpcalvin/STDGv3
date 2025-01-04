@@ -6,6 +6,7 @@ Run
 import STDGv3
 
 head = STDGv3.read_script("./tests/datapack/scripts.txt")
+head.generate_dialogue_cmd()
 head.generate_datapack("./tests/datapack/", "test", reload=True)
 ```
 
@@ -37,3 +38,11 @@ last.insert_after(copy.deepcopy(tpSq))
 
 ```
 
+Insert function
+
+```python
+head.append("function scene:start")
+
+next = head.get_next(1)
+next.extend(["function scene:1", "function scene:2"])
+```
