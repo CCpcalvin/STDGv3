@@ -1,4 +1,4 @@
-tellraw @a "嗣尤：你還真的是痴撚線【瘋掉了】！"
+tellraw @a ["", {"text": "嗣尤", "color": "aqua"}, "：你還真的是痴撚線【瘋掉了】！"]
 
 scoreboard players set next_dialogue_id Dialogue.Global 18
 function dialogue:helper/reset_timer

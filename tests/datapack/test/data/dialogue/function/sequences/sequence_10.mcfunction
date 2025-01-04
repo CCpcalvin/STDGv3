@@ -1,4 +1,4 @@
-tellraw @a "嗣尤：？？？？？"
+tellraw @a ["", {"text": "嗣尤", "color": "aqua"}, "：？？？？？"]
 
 scoreboard players set next_dialogue_id Dialogue.Global 11
 function dialogue:helper/reset_timer

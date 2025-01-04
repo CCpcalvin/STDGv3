@@ -38,11 +38,18 @@ last.insert_after(copy.deepcopy(tpSq))
 
 ```
 
-Insert function
+Insert 
 
 ```python
 head.append("function scene:start")
 
 next = head.get_next(1)
 next.extend(["function scene:1", "function scene:2"])
+```
+
+Color 
+```python
+STDGv3.DialogueSequence.update_colormap({"嗣尤": "aqua", "幸姈": "red"})
+head.generate_dialogue_json()
+head.generate_datapack("./tests/datapack/", "test", reload=True)
 ```

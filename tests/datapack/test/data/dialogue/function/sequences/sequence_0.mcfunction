@@ -1,4 +1,4 @@
-tellraw @a "嗣尤：你跟她都分手一段時間了"
+tellraw @a ["", {"text": "嗣尤", "color": "aqua"}, "：你跟她都分手一段時間了"]
 
 scoreboard players set next_dialogue_id Dialogue.Global 1
 function dialogue:helper/reset_timer

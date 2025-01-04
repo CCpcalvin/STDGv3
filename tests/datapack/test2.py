@@ -24,7 +24,7 @@ def main():
     last.insert_before(copy.deepcopy(tpSq))
     last.insert_after(copy.deepcopy(tpSq))
 
-    head.generate_dialogue_cmd()
+    head.generate_dialogue_json()
     head.print_tree()
     head.generate_datapack("./tests/datapack/", "test", reload=True)
 

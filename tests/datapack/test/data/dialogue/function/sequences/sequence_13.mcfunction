@@ -1,4 +1,4 @@
-tellraw @a "你：我是認真的啊！"
+tellraw @a ["你：我是認真的啊！"]
 
 scoreboard players set next_dialogue_id Dialogue.Global 14
 function dialogue:helper/reset_timer

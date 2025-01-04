@@ -1,4 +1,4 @@
-tellraw @a "嗣尤：還掛念她嗎？"
+tellraw @a ["", {"text": "嗣尤", "color": "aqua"}, "：還掛念她嗎？"]
 
 scoreboard players set next_dialogue_id Dialogue.Global 2
 function dialogue:helper/reset_timer

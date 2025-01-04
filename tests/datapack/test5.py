@@ -3,7 +3,7 @@ import STDGv3
 
 def main():
     head = STDGv3.read_script("./tests/datapack/scripts_short.txt")
-    head.generate_dialogue_cmd()
+    head.generate_dialogue_json()
     head.append("function scene:start")
 
     next = head.get_next(1)

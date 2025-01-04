@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, TextIO, List
+from typing import List, Optional, TextIO
 
 from .gen import *
 
@@ -35,9 +35,12 @@ class Sequence:
             self.next.print_tree_recursive(id + 1)
 
     def print_tree(self):
+        """Prints out the linked list, used for debugging"""
         self.print_tree_recursive(self.start_id)
 
     def get_head(self):
+        """Gets the head of the linked list"""
+
         if self.pervious is not None:
             return self.pervious.get_head()
 
@@ -45,6 +48,8 @@ class Sequence:
             return self
 
     def get_last(self):
+        """Gets the last element of the linked list"""
+
         if self.next is not None:
             return self.next.get_last()
 
@@ -52,6 +57,18 @@ class Sequence:
             return self
 
     def get_next(self, num: int):
+        """
+        Gets the next element in the linked list, given the number of elements to traverse.
+
+        Args:
+            num (int): The number of elements to traverse.
+
+        Returns:
+            Sequence: The next element in the linked list.
+
+        Raises:
+            Exception: If num is negative.
+        """
         if num < 0:
             raise Exception("Domain error")
 
@@ -62,6 +79,18 @@ class Sequence:
             return self.next.get_next(num - 1)
 
     def get_pervious(self, num: int):
+        """
+        Gets the previous element in the linked list, given the number of elements to traverse.
+
+        Args:
+            num (int): The number of elements to traverse backward.
+
+        Returns:
+            Sequence: The previous element in the linked list.
+
+        Raises:
+            Exception: If num is negative.
+        """
         if num < 0:
             raise Exception("Domain error")
 
@@ -95,15 +124,18 @@ class Sequence:
 
         return self.time_to_next_sequence
 
-    def generate_dialogue_cmd(self):
-        if self.next:
-            self.next.generate_dialogue_cmd()
-
     def append(self, cmd: str):
         self.cmd_str_list.append(cmd)
 
     def extend(self, cmd_list: List[str]):
         self.cmd_str_list.extend(cmd_list)
+
+    def generate_dialogue_json(self):
+        if self.next:
+            self.next.generate_dialogue_json()
+
+    def get_cmd_list(self):
+        return self.cmd_str_list
 
     def generate_sequence(self, id: int, data_path: str, run_sequence_file: TextIO):
         # For generating sequence mcfunction
@@ -112,7 +144,7 @@ class Sequence:
             "w",
             encoding="utf-8",
         ) as f:
-            for cmd in self.cmd_str_list:
+            for cmd in self.get_cmd_list():
                 f.write(cmd + "\n")
 
             f.write(set_next_dialogue_id(id + 1))
