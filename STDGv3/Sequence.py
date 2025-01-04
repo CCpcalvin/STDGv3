@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional, TextIO
 
-from .Helper import *
+from .gen import *
 
 
 class Sequence:
@@ -153,26 +153,10 @@ class Sequence:
         # Generate start sequence function
         start_cmd = FORCE_RESET_CMD
         start_cmd += stop_pause()
-        start_cmd += run_sequence(0)
+        start_cmd += run_sequence(START_ID)
         with open(
             os.path.join(data_path, SEQUENCES_PATH, f"start.mcfunction"),
             "w",
             encoding="utf-8",
         ) as f:
             f.write(start_cmd)
-
-
-class DialogueSequence(Sequence):
-    def __init__(self, dialogue_str: str):
-        super().__init__()
-        self.dialogue_str = dialogue_str.strip()
-
-    def print_content(self):
-        return f"{super().print_content()}\t DialogueString: {self.dialogue_str}\n"
-
-    def __str__(self):
-        return f"Dialogue Sequence: \n {self.print_content()}\t\n"
-
-    def get_cmd(self):
-        self.cmd_str = f'tellraw @a "{self.dialogue_str}"\n'
-        return self.cmd_str

@@ -1,4 +1,4 @@
-from .Sequence import DialogueSequence, Sequence
+from .DialogueSequence import DialogueSequence
 
 
 def read_script(path: str):
