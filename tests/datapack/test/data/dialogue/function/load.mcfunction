@@ -1,2 +1,2 @@
 scoreboard objectives add Dialogue.Global dummy
-function dialogue:debug/force_reset
+function dialogue:helper/force_reset

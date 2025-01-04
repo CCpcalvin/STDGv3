@@ -34,10 +34,14 @@ TIMER: str = "timer"
 NEXT_DIALOGUE_ID: str = "next_dialogue_id"
 PAUSE: str = "pause"
 TIME_TO_NEXT_SEQUENCE: str = "time_to_next_sequence"
+SEQUENCE_GUARD: str = "guard"
 
 # Commands
 RESET_TIMER_CMD = f"function {NAMESPACE}:helper/reset_timer\n"
+FORCE_RESET_CMD = f"function {NAMESPACE}:helper/force_reset\n"
 TIMER_LOOP_CMD = f"scoreboard players add {TIMER} {GLOBAL_SCOREBOARD_OBJ} 1\n"
+SET_GUARD_CMD = f"scoreboard players set {SEQUENCE_GUARD} Dialogue.Global 1\n"
+REMOVE_GUARD_CMD = f"scoreboard players set {SEQUENCE_GUARD} Dialogue.Global 0\n"
 
 
 def gen_mcmeta(pack_format: int, description: str) -> str:
@@ -51,6 +55,18 @@ def set_next_dialogue_id(id: int):
 
 def set_time_to_next_sequence(time: int):
     return f"scoreboard players set {TIME_TO_NEXT_SEQUENCE} Dialogue.Global {time}\n"
+
+
+def set_pause():
+    return f"scoreboard players set {PAUSE} Dialogue.Global 1\n"
+
+
+def stop_pause():
+    return f"scoreboard players set {PAUSE} Dialogue.Global 0\n"
+
+
+def run_sequence(id: int):
+    return f"function {NAMESPACE}:sequences/sequence_{id}\n"
 
 
 def create_datapack(
@@ -104,13 +120,10 @@ def get_show_display_function(data_path: str):
 def get_force_reset_function(data_path: str):
     # Get force reset functions
     force_reset_cmd_str = RESET_TIMER_CMD
-    force_reset_cmd_str += (
-        f"scoreboard players set {NEXT_DIALOGUE_ID} {GLOBAL_SCOREBOARD_OBJ} 0\n"
-    )
-    force_reset_cmd_str += f"scoreboard players set {PAUSE} {GLOBAL_SCOREBOARD_OBJ} 1\n"
-    force_reset_cmd_str += (
-        f"scoreboard players set {TIME_TO_NEXT_SEQUENCE} {GLOBAL_SCOREBOARD_OBJ} 9999\n"
-    )
+    force_reset_cmd_str += set_next_dialogue_id(9999)
+    force_reset_cmd_str += set_pause()
+    force_reset_cmd_str += set_time_to_next_sequence(9999)
+    force_reset_cmd_str += SET_GUARD_CMD
 
     with open(
         os.path.join(data_path, FUNCTION_PATH, "helper/force_reset.mcfunction"), "w"
@@ -126,6 +139,31 @@ def get_reset_timer_function(data_path: str):
         f.write(reset_timer_cmd_str)
 
 
+def get_pause_function(data_path: str):
+    pause_cmd_str = set_pause()
+    with open(
+        os.path.join(data_path, FUNCTION_PATH, "helper/pause.mcfunction"), "w"
+    ) as f:
+        f.write(pause_cmd_str)
+
+
+def get_stop_pause_function(data_path: str):
+    stop_pause_cmd_str = stop_pause()
+    with open(
+        os.path.join(data_path, FUNCTION_PATH, "helper/stop_pause.mcfunction"), "w"
+    ) as f:
+        f.write(stop_pause_cmd_str)
+
+
+def get_stop_function(data_path: str):
+    stop_cmd_str = set_pause()
+    stop_cmd_str += FORCE_RESET_CMD
+    with open(
+        os.path.join(data_path, FUNCTION_PATH, "helper/stop.mcfunction"), "w"
+    ) as f:
+        f.write(stop_cmd_str)
+
+
 def init_datapack(data_path: str):
     # Get debug functions
     os.makedirs(os.path.join(data_path, FUNCTION_PATH, "debug"))
@@ -135,10 +173,13 @@ def init_datapack(data_path: str):
     os.makedirs(os.path.join(data_path, FUNCTION_PATH, "helper"))
     get_force_reset_function(data_path)
     get_reset_timer_function(data_path)
+    get_pause_function(data_path)
+    get_stop_pause_function(data_path)
+    get_stop_function(data_path)
 
     # Get the init function
     load_cmd_str = f"scoreboard objectives add {GLOBAL_SCOREBOARD_OBJ} dummy\n"
-    load_cmd_str += f"function {NAMESPACE}:debug/force_reset\n"
+    load_cmd_str += FORCE_RESET_CMD
     with open(os.path.join(data_path, LOAD_FUNCTION_PATH), "w") as f:
         f.write(load_cmd_str)
 
@@ -163,8 +204,8 @@ def init_datapack(data_path: str):
         json.dump(tick_json, f)
 
     # Get the loop function
-    loop_cmd_str = f"execute if score {TIMER} {GLOBAL_SCOREBOARD_OBJ} = {TIME_TO_NEXT_SEQUENCE} {GLOBAL_SCOREBOARD_OBJ} run function {NAMESPACE}:{RUN_SEQUENCES_FUNCTION}\n"
+    loop_cmd_str = f"execute if score {TIMER} {GLOBAL_SCOREBOARD_OBJ} >= {TIME_TO_NEXT_SEQUENCE} {GLOBAL_SCOREBOARD_OBJ} run function {NAMESPACE}:{RUN_SEQUENCES_FUNCTION}\n"
     loop_cmd_str += TIMER_LOOP_CMD
+    loop_cmd_str += REMOVE_GUARD_CMD
     with open(os.path.join(data_path, LOOP_FUNCTION_PATH), "w") as f:
         f.write(loop_cmd_str)
-

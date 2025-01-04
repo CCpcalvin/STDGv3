@@ -1,4 +1,2 @@
 from .debug import *
-
-from .main import read_script
-from .main import Sequence, DialogueSequence
+from .main import DialogueSequence, Sequence, read_script

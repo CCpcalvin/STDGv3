@@ -11,6 +11,7 @@ class Sequence:
         self.id: int = id
         self.cmd_str = cmd_str
         self.next: Optional[Sequence] = None
+        self.pervious: Optional[Sequence] = None
         self.time_to_next_sequence: Optional[int] = None
 
     def print_content(self):
@@ -43,12 +44,16 @@ class Sequence:
 
         return self.time_to_next_sequence
 
-    def generate_sequence(self, data_path: str, run_sequence: TextIO):
+    def generate_sequence(self, data_path: str, run_sequence_file: TextIO):
         # For generating sequence mcfunction
         cmd = self.generate_cmd()
         cmd += set_next_dialogue_id(self.id + 1)
         cmd += RESET_TIMER_CMD
         cmd += set_time_to_next_sequence(self.generate_interval())
+        cmd += SET_GUARD_CMD
+
+        if not self.next:
+            cmd += set_pause()
 
         with open(
             os.path.join(data_path, SEQUENCES_PATH, f"sequence_{self.id}.mcfunction"),
@@ -57,12 +62,14 @@ class Sequence:
             f.write(cmd)
 
         # For generating run_sequences.mcfunction
-        run_sequence.write(
-            f"execute if score {NEXT_DIALOGUE_ID} {GLOBAL_SCOREBOARD_OBJ} matches {self.id} function {NAMESPACE}:sequences/sequence_{self.id}\n"
+        run_sequence_file.write(
+            f"execute if score {NEXT_DIALOGUE_ID} {GLOBAL_SCOREBOARD_OBJ} matches {self.id} if score {SEQUENCE_GUARD} {GLOBAL_SCOREBOARD_OBJ} matches 0 run "
+            + run_sequence(self.id)
+            + "\n"
         )
 
         if self.next:
-            self.next.generate_sequence(data_path, run_sequence)
+            self.next.generate_sequence(data_path, run_sequence_file)
 
     def generate_datapack(
         self,
@@ -77,7 +84,7 @@ class Sequence:
         )
         init_datapack(data_path)
 
-        # Generate dialogue functions
+        # Generate sequence functions
         os.makedirs(os.path.join(data_path, SEQUENCES_PATH))
         run_sequences_file = open(
             os.path.join(data_path, RUN_SEQUENCES_FUNCTION_PATH), "w"
@@ -85,13 +92,21 @@ class Sequence:
         self.generate_sequence(data_path, run_sequences_file)
         run_sequences_file.close()
 
-        # Generate loop
+        # Generate start sequence function
+        start_cmd = FORCE_RESET_CMD
+        start_cmd += stop_pause()
+        start_cmd += run_sequence(0)
+        with open(
+            os.path.join(data_path, SEQUENCES_PATH, f"start.mcfunction"),
+            "w",
+        ) as f:
+            f.write(start_cmd)
 
 
 class DialogueSequence(Sequence):
-    def __init__(self, id: int, dialogue_str: Optional[str] = None):
+    def __init__(self, id: int, dialogue_str: str):
         super().__init__(id)
-        self.dialogue_str = dialogue_str
+        self.dialogue_str = dialogue_str.strip()
 
     def print_content(self):
         return f"{super().print_content()}\t DialogueString: {self.dialogue_str}\n"
