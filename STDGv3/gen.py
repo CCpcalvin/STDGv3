@@ -42,8 +42,8 @@ SEQUENCE_GUARD: str = "guard"
 SCENE_ID: str = "scene_id"
 
 # Commands
-RESET_TIMER_CMD = f"function {NAMESPACE}:helper/reset_timer\n"
-FORCE_RESET_CMD = f"function {NAMESPACE}:helper/force_reset\n"
+RESET_TIMER_CMD = f"function {NAMESPACE}:reset_timer\n"
+FORCE_RESET_CMD = f"function {NAMESPACE}:force_reset\n"
 TIMER_LOOP_CMD = f"scoreboard players add {TIMER} {GLOBAL_SCOREBOARD_OBJ} 1\n"
 SET_GUARD_CMD = f"scoreboard players set {SEQUENCE_GUARD} Dialogue.Global 1\n"
 REMOVE_GUARD_CMD = f"scoreboard players set {SEQUENCE_GUARD} Dialogue.Global 0\n"
@@ -66,7 +66,7 @@ def set_pause():
     return f"scoreboard players set {PAUSE} Dialogue.Global 1\n"
 
 
-def stop_pause():
+def resume():
     return f"scoreboard players set {PAUSE} Dialogue.Global 0\n"
 
 
@@ -138,7 +138,7 @@ def get_force_reset_function(data_path: str):
     force_reset_cmd_str += set_scene_id(9999)
 
     with open(
-        os.path.join(data_path, FUNCTION_PATH, "helper/force_reset.mcfunction"),
+        os.path.join(data_path, FUNCTION_PATH, "force_reset.mcfunction"),
         "w",
         encoding="utf-8",
     ) as f:
@@ -148,7 +148,7 @@ def get_force_reset_function(data_path: str):
 def get_reset_timer_function(data_path: str):
     reset_timer_cmd_str = f"scoreboard players set {TIMER} {GLOBAL_SCOREBOARD_OBJ} 0\n"
     with open(
-        os.path.join(data_path, FUNCTION_PATH, "helper/reset_timer.mcfunction"),
+        os.path.join(data_path, FUNCTION_PATH, "reset_timer.mcfunction"),
         "w",
         encoding="utf-8",
     ) as f:
@@ -158,32 +158,41 @@ def get_reset_timer_function(data_path: str):
 def get_pause_function(data_path: str):
     pause_cmd_str = set_pause()
     with open(
-        os.path.join(data_path, FUNCTION_PATH, "helper/pause.mcfunction"),
+        os.path.join(data_path, FUNCTION_PATH, "pause.mcfunction"),
         "w",
         encoding="utf-8",
     ) as f:
         f.write(pause_cmd_str)
 
 
-def get_stop_pause_function(data_path: str):
-    stop_pause_cmd_str = stop_pause()
+def get_resume_function(data_path: str):
+    resume_cmd_str = resume()
     with open(
-        os.path.join(data_path, FUNCTION_PATH, "helper/stop_pause.mcfunction"),
+        os.path.join(data_path, FUNCTION_PATH, "resume.mcfunction"),
         "w",
         encoding="utf-8",
     ) as f:
-        f.write(stop_pause_cmd_str)
+        f.write(resume_cmd_str)
 
 
 def get_stop_function(data_path: str):
     stop_cmd_str = set_pause()
     stop_cmd_str += FORCE_RESET_CMD
     with open(
-        os.path.join(data_path, FUNCTION_PATH, "helper/stop.mcfunction"),
+        os.path.join(data_path, FUNCTION_PATH, "stop.mcfunction"),
         "w",
         encoding="utf-8",
     ) as f:
         f.write(stop_cmd_str)
+
+
+def get_skip_function(data_path: str):
+    with open(
+        os.path.join(data_path, FUNCTION_PATH, "skip.mcfunction"),
+        "w",
+        encoding="utf-8",
+    ) as f:
+        f.write(RUN_SCENE_CMD)
 
 
 def init_datapack(data_path: str):
@@ -192,12 +201,12 @@ def init_datapack(data_path: str):
     get_show_display_function(data_path)
 
     # Get helper function
-    os.makedirs(os.path.join(data_path, FUNCTION_PATH, "helper"))
     get_force_reset_function(data_path)
     get_reset_timer_function(data_path)
     get_pause_function(data_path)
-    get_stop_pause_function(data_path)
+    get_resume_function(data_path)
     get_stop_function(data_path)
+    get_skip_function(data_path)
 
     # Get the init function
     load_cmd_str = f"scoreboard objectives add {GLOBAL_SCOREBOARD_OBJ} dummy\n"

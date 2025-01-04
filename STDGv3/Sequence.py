@@ -144,9 +144,7 @@ class Sequence:
         return self.cmd_str_list
 
     def run_sequence(self, id: int):
-        return (
-            f"function {NAMESPACE}:{self.scene}/{self.sequence_subpath}/{id}\n"
-        )
+        return f"function {NAMESPACE}:{self.scene}/{self.sequence_subpath}/{id}\n"
 
     def generate_sequence(self, id: int, data_path: str, run_sequence_file: TextIO):
         # For generating sequence mcfunction
@@ -199,7 +197,7 @@ class Sequence:
         # Generate start sequence function
         start_cmd = FORCE_RESET_CMD
         start_cmd = set_scene_id(scene_id)
-        start_cmd += stop_pause()
+        start_cmd += resume()
         start_cmd += self.run_sequence(START_ID)
         with open(
             os.path.join(data_path, self.scene_path, f"start.mcfunction"),

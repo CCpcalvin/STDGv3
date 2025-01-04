@@ -1,5 +1,6 @@
 # STDGv3
 
+# Python Code
 Run 
 
 ```python
@@ -64,3 +65,26 @@ STDGv3.generate_datapack(
     reload=True,
 )
 ```
+
+# Minecraft Datapack Command
+
+In minecraft:
+```
+function dialogue:<scene>/start
+```
+to start a sequence
+
+```
+function dialogue:stop
+```
+to stop the sequence
+
+```
+function dialogue:pause
+```
+to stop the sequence
+
+```
+function dialogue:resume
+```
+to resume the sequence
