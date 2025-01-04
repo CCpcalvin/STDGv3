@@ -10,7 +10,6 @@ from .gen import *
 def count_chinese_characters(text: str):
     # Define a regular expression pattern for Chinese characters
     chinese_char_pattern = r"[\u4e00-\u9fff]"
-    # chinese_char_pattern = r"\p{Han}"
 
     # Use re.findall to find all Chinese characters in the text
     chinese_chars = re.findall(chinese_char_pattern, text)
