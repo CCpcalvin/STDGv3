@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import List, Optional, TextIO
 
 from .gen import *
+import re
 
 
 class Sequence:
@@ -123,6 +124,18 @@ class Sequence:
 
         sequence.pervious = self
         self.next = sequence
+
+    def search_cmd_next(self, pattern: str) -> Optional[Sequence]:
+        if self.next:
+            for cmd in self.next.cmd_str_list:
+                if re.search(pattern, cmd):
+                    return self.next
+            
+            return self.next.search_cmd_next(pattern)
+
+    def search_dialogue_next(self, pattern: str) -> Optional[Sequence]:
+        if self.next:
+            return self.next.search_dialogue_next(pattern)
 
     def get_time_to_next_sequence(self):
         if not self.time_to_next_sequence:

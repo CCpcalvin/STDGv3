@@ -32,7 +32,7 @@ def main():
     STDGv3.generate_datapack(
         sqList,
         "./demo/",
-        "test",
+        "dialogue",
         reload=True,
     )
 

@@ -1,12 +1,17 @@
 # STDGv3
 
 # Python Code
-Run 
-
+Get sequence from .txt
 ```python
 import STDGv3
 
 head = STDGv3.read_script("./tests/datapack/scripts.txt")
+```
+
+
+Generate datapack from sequence list
+
+```python
 sqList = [head]
 
 STDGv3.generate_datapack(
@@ -57,7 +62,7 @@ next.extend(["function scene:1", "function scene:2"])
 Color 
 ```python
 STDGv3.DialogueSequence.update_colormap({"嗣尤": "aqua", "幸姈": "red"})
-head.generate_dialogue_json()
+head.generate_dialogue_json() #!! Important
 STDGv3.generate_datapack(
     sqList,
     "./tests/datapack/",

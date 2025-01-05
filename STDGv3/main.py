@@ -7,6 +7,17 @@ import os
 
 
 def read_script(path: str, scene: str):
+    """
+    Reads a script file and constructs a linked list of DialogueSequence objects.
+
+    Args:
+        path (str): The path to the script file to be read.
+        scene (str): The scene identifier for the DialogueSequence objects.
+
+    Returns:
+        DialogueSequence: The head of the linked list of DialogueSequence objects.
+    """
+
     with open(path, "r", encoding="utf-8") as f:
         head = DialogueSequence(scene, next(f))
         last = head
@@ -29,6 +40,18 @@ def generate_datapack(
     datapack_description: str = "STDGv3",
     reload: bool = False,
 ):
+    """
+    Generate a datapack given a list of sequences.
+
+    Args:
+        sequence_list (list[Sequence]): The list of sequences to be generated.
+        datapack_path (str): The path where the datapack is located.
+        datapack_name (str): The name of the datapack.
+        pack_format (int, optional): The pack format of the datapack. Defaults to 61.
+        datapack_description (str, optional): The description of the datapack. Defaults to "STDGv3".
+        reload (bool, optional): Whether to reload the datapack if it already exists. Defaults to False.
+    """
+
     data_path = create_datapack(
         datapack_path, datapack_name, pack_format, datapack_description, reload
     )

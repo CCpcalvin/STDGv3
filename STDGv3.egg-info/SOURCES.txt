@@ -1,0 +1,15 @@
+LICENSE
+README.md
+setup.py
+STDGv3/DialogueSequence.py
+STDGv3/Sequence.py
+STDGv3/__init__.py
+STDGv3/gen.py
+STDGv3/helper.py
+STDGv3/main.py
+STDGv3.egg-info/PKG-INFO
+STDGv3.egg-info/SOURCES.txt
+STDGv3.egg-info/dependency_links.txt
+STDGv3.egg-info/top_level.txt
+STDGv3/debug/__init__.py
+STDGv3/debug/greet.py
