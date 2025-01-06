@@ -50,7 +50,7 @@ class DialogueSequence(Sequence):
 
     def search_dialogue_next(self, pattern: str):
         if self.next:
-            if re.search(pattern, self.dialogue_str):
+            if re.search(pattern, self.next.dialogue_str):
                 return self.next
 
             return self.next.search_dialogue_next(pattern)

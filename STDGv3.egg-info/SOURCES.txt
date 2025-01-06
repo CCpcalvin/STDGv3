@@ -2,6 +2,7 @@ LICENSE
 README.md
 setup.py
 STDGv3/DialogueSequence.py
+STDGv3/Helper.py
 STDGv3/Sequence.py
 STDGv3/__init__.py
 STDGv3/gen.py

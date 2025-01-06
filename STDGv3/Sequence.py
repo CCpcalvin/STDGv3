@@ -28,6 +28,9 @@ class Sequence:
         self.scene = scene
         self.scene_path = os.path.join(FUNCTION_PATH, scene)
         self.scene_sequence_path = os.path.join(self.scene_path, self.sequence_subpath)
+    
+    def create_sequence(self, cmd_str_list: Optional[List[str]] = None):
+        return Sequence(self.scene, cmd_str_list)
 
     def print_content(self):
         return f"\t CommandString: {self.cmd_str_list}\n\t Time to next Sequence: {self.time_to_next_sequence}\n"
@@ -124,6 +127,18 @@ class Sequence:
 
         sequence.pervious = self
         self.next = sequence
+    
+    def insert_cmd_before(self, cmd_str_list: List[str]):
+        sq = self.create_sequence(cmd_str_list)
+        self.insert_before(sq)
+
+        return sq
+
+    def insert_cmd_after(self, cmd_str_list: List[str]):
+        sq = self.create_sequence(cmd_str_list)
+        self.insert_after(sq)
+
+        return sq
 
     def search_cmd_next(self, pattern: str) -> Optional[Sequence]:
         if self.next:
