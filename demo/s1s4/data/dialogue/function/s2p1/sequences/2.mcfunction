@@ -1,7 +1,8 @@
 execute as @a at @s run playsound minecraft:entity.player.levelup player @s ~ ~ ~
-tellraw @a [{"text": "[任務：去洗澡]", "color": "green"}]
+function s2p1:3
+tellraw @a [{"text": "[任務：去找朋友]", "color": "green"}]
 
-scoreboard players set next_dialogue_id Dialogue.Global 11
+scoreboard players set next_dialogue_id Dialogue.Global 3
 function dialogue:reset_timer
 scoreboard players set time_to_next_sequence Dialogue.Global 40
 scoreboard players set guard Dialogue.Global 1

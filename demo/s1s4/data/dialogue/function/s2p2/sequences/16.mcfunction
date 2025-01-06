@@ -1,4 +1,4 @@
-tellraw @a ["", {"text": "嗣尤", "color": "#ffb974"}, "：……"]
+tellraw @a ["", {"text": "你", "color": "#94abff"}, "：是呀！"]
 
 scoreboard players set next_dialogue_id Dialogue.Global 17
 function dialogue:reset_timer

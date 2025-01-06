@@ -1,6 +1,6 @@
-tellraw @a ["", {"text": "你", "color": "#94abff"}, "：我可不像", {"text": "你", "color": "#94abff"}, "，有這麼多人追求呢！"]
+tellraw @a ["", {"text": "嗣尤", "color": "#ffb974"}, "：那", {"text": "你", "color": "#94abff"}, "最近有新對象嗎？"]
 
 scoreboard players set next_dialogue_id Dialogue.Global 5
 function dialogue:reset_timer
-scoreboard players set time_to_next_sequence Dialogue.Global 78
+scoreboard players set time_to_next_sequence Dialogue.Global 61
 scoreboard players set guard Dialogue.Global 1

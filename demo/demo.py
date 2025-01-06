@@ -55,27 +55,27 @@ def main():
         sqDict[scene] = head
 
     sq = sqDict["s1p1"]
-    sq.insert_cmd_before(["function s1p1:1"]).time_to_next_sequence = 20
+    sq.search_dialogue(re.escape("???：可能我們是兩個世界的人")).insert_cmd_before(
+        ["function s1p1:1"]
+    ).time_to_next_sequence = 20
+
     sq.get_next(2).insert_cmd_after(
         ["function dialogue:s2p1/start"]
     ).time_to_next_sequence = 20
-    head = head.get_head()
+    sqDict["s1p1"] = sqDict["s1p1"].get_head()
 
     sq = sqDict["s2p1"]
     sq.insert_cmd_before(["function s2p1:1"]).time_to_next_sequence = 60
     sq.insert_cmd_before(["function s2p1:2"]).time_to_next_sequence = 80
     sq.append("function s2p1:3")
+    sqDict["s2p1"] = sqDict["s2p1"].get_head()
 
     sq = sqDict["s2p2"]
     sq.insert_cmd_before(["function s2p2:1"]).time_to_next_sequence = 10
-    sqFound = sq.search_dialogue_next("嗣尤：你還真的是痴撚線【瘋掉了】！")
-    print(sqFound)
-    sqFound.insert_cmd_before(["say hi"]).time_to_next_sequence = 10
-
-    print(sq.search_dialogue_next("嗣尤：你還真的是痴撚線【瘋掉了】！"))
-    sq.search_dialogue_next("嗣尤：你還真的是痴撚線【瘋掉了】！").insert_cmd_after(
+    sq.search_dialogue("嗣尤：你還真的是痴撚線【瘋掉了】！").insert_cmd_after(
         ["function dialogue:s3p1/start"]
     ).time_to_next_sequence = 10
+    sqDict["s2p2"] = sqDict["s2p2"].get_head()
 
     sq.time_to_next_sequence = 10
 
