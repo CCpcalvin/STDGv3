@@ -48,12 +48,16 @@ class DialogueSequence(Sequence):
         else:
             cls.pattern = None
 
-    def search_dialogue_next(self, pattern: str):
-        if self.next:
-            if re.search(pattern, self.next.dialogue_str):
-                return self.next
+    def isMatchDialogue(self, pattern: str):
+        return re.search(pattern, self.dialogue_str)
 
-            return self.next.search_dialogue_next(pattern)
+    def search_dialogue(self, pattern: str) -> Optional[Sequence]:
+        print(self.dialogue_str)
+        if re.search(pattern, self.dialogue_str):
+            return self
+
+        if self.next:
+            return self.next.search_dialogue(pattern)
 
     def generate_dialogue_json(self):
         if not self.dialogue_cmd_json:

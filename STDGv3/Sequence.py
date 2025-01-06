@@ -28,7 +28,7 @@ class Sequence:
         self.scene = scene
         self.scene_path = os.path.join(FUNCTION_PATH, scene)
         self.scene_sequence_path = os.path.join(self.scene_path, self.sequence_subpath)
-    
+
     def create_sequence(self, cmd_str_list: Optional[List[str]] = None):
         return Sequence(self.scene, cmd_str_list)
 
@@ -127,7 +127,7 @@ class Sequence:
 
         sequence.pervious = self
         self.next = sequence
-    
+
     def insert_cmd_before(self, cmd_str_list: List[str]):
         sq = self.create_sequence(cmd_str_list)
         self.insert_before(sq)
@@ -145,12 +145,19 @@ class Sequence:
             for cmd in self.next.cmd_str_list:
                 if re.search(pattern, cmd):
                     return self.next
-            
+
             return self.next.search_cmd_next(pattern)
+
+    def isMatchDialogue(self, pattern: str):
+        return False
+
+    def search_dialogue(self, pattern: str) -> Optional[Sequence]:
+        if self.next:
+            return self.next.search_dialogue(pattern)
 
     def search_dialogue_next(self, pattern: str) -> Optional[Sequence]:
         if self.next:
-            return self.next.search_dialogue_next(pattern)
+            return self.next.search_dialogue(pattern)
 
     def get_time_to_next_sequence(self):
         if not self.time_to_next_sequence:

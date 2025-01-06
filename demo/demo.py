@@ -32,10 +32,19 @@ def OptionFeedbackModifier(head):
 
 def main():
     sqDict: dict[str, STDGv3.Sequence] = {}
-    scripts_pool = r"C:\Users\spagh\Desktop\Spaghetti Even\Minecraft map\STDGv3\demo\scripts"
-    STDGv3.DialogueSequence.update_colormap({
-        "你": "#94abff", "嗣尤": "#ffb974", "妹妹": "#ff80f0", "鈺樺": "#ffec8d", "寶琳": "#d686ff", "雪縈": "#abf7ff", "曉澄": "#a1f8c3", "幸姈": "#ffbac6"
-    })
+    scripts_pool = r"demo/scripts"
+    STDGv3.DialogueSequence.update_colormap(
+        {
+            "你": "#94abff",
+            "嗣尤": "#ffb974",
+            "妹妹": "#ff80f0",
+            "鈺樺": "#ffec8d",
+            "寶琳": "#d686ff",
+            "雪縈": "#abf7ff",
+            "曉澄": "#a1f8c3",
+            "幸姈": "#ffbac6",
+        }
+    )
 
     for file in os.listdir(scripts_pool):
         scene = file.split(".")[0]
@@ -44,26 +53,37 @@ def main():
         OptionFeedbackModifier(head)
         head.generate_dialogue_json()
         sqDict[scene] = head
-    
+
     sq = sqDict["s1p1"]
-    sq.append("function outfit_chiikawa:give")
-    sq.search_dialogue_next("嗣尤：你跟她都分手一段時間了").insert_cmd_after(["function outfit_hachiware:give"]).time_to_next_sequence = 10
-
-    sq.search_dialogue_next("嗣尤：你跟她都分手一段時間了").get_time_to_next_sequence()
-    sq.get_next(7).insert_cmd_before(["function outfit_usagi:give"])
-
+    sq.insert_cmd_before(["function s1p1:1"]).time_to_next_sequence = 20
+    sq.get_next(2).insert_cmd_after(
+        ["function dialogue:s2p1/start"]
+    ).time_to_next_sequence = 20
+    head = head.get_head()
 
     sq = sqDict["s2p1"]
-    sq.append("function tutorial:give")
-    sq.print_tree()
+    sq.insert_cmd_before(["function s2p1:1"]).time_to_next_sequence = 60
+    sq.insert_cmd_before(["function s2p1:2"]).time_to_next_sequence = 80
+    sq.append("function s2p1:3")
+
+    sq = sqDict["s2p2"]
+    sq.insert_cmd_before(["function s2p2:1"]).time_to_next_sequence = 10
+    sqFound = sq.search_dialogue_next("嗣尤：你還真的是痴撚線【瘋掉了】！")
+    print(sqFound)
+    sqFound.insert_cmd_before(["say hi"]).time_to_next_sequence = 10
+
+    print(sq.search_dialogue_next("嗣尤：你還真的是痴撚線【瘋掉了】！"))
+    sq.search_dialogue_next("嗣尤：你還真的是痴撚線【瘋掉了】！").insert_cmd_after(
+        ["function dialogue:s3p1/start"]
+    ).time_to_next_sequence = 10
 
     sq.time_to_next_sequence = 10
 
     sqList = list(sqDict.values())
     STDGv3.generate_datapack(
         sqList,
-        r"C:\Users\spagh\AppData\Roaming\.minecraft\saves\《蛇年愛情妄想症》\datapacks",
-        "testing",
+        r"./demo",
+        "s1s4",
         reload=True,
     )
 
