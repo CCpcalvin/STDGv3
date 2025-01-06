@@ -148,9 +148,6 @@ class Sequence:
 
             return self.next.search_cmd_next(pattern)
 
-    def isMatchDialogue(self, pattern: str):
-        return False
-
     def search_dialogue(self, pattern: str) -> Optional[Sequence]:
         if self.next:
             return self.next.search_dialogue(pattern)

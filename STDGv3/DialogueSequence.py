@@ -48,9 +48,6 @@ class DialogueSequence(Sequence):
         else:
             cls.pattern = None
 
-    def isMatchDialogue(self, pattern: str):
-        return re.search(pattern, self.dialogue_str)
-
     def search_dialogue(self, pattern: str) -> Optional[Sequence]:
         print(self.dialogue_str)
         if re.search(pattern, self.dialogue_str):
