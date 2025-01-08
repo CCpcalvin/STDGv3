@@ -237,11 +237,11 @@ def init_datapack(data_path: str):
         json.dump(tick_json, f)
 
     # Get the loop function
-    loop_cmd_str = (
+    loop_cmd_str = REMOVE_GUARD_CMD
+    loop_cmd_str += (
         f"execute if score {TIMER} {GLOBAL_SCOREBOARD_OBJ} >= {TIME_TO_NEXT_SEQUENCE} {GLOBAL_SCOREBOARD_OBJ} run "
         + RUN_SCENE_CMD
     )
     loop_cmd_str += TIMER_LOOP_CMD
-    loop_cmd_str += REMOVE_GUARD_CMD
     with open(os.path.join(data_path, LOOP_FUNCTION_PATH), "w") as f:
         f.write(loop_cmd_str)

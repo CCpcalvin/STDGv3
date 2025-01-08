@@ -1,7 +1,7 @@
 import copy
 import math
 import re
-from typing import Dict, List, Optional, Callable, Pattern
+from typing import Dict, List, Optional, Pattern
 
 from .gen import *
 from .Sequence import Sequence
